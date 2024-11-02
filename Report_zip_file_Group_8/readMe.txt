@@ -1,0 +1,2 @@
+To compile the latex files correctly inorder to generate pdf file, firstly create a blank Overleaf project and upload all the images and config and main files individually into that project (not as a folder).
+Then simply compile the project and you will get the desired pdf.
