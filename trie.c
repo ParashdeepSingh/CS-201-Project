@@ -10,7 +10,7 @@ long long *v1 = NULL;
 int v1_size = 0;
 int count_trie = 0;
 
-// Append function similar to vector's push_back in c++
+// Append function similar to vector's push_back in C++
 void append(long long value) {
     v1 = (long long *)realloc(v1, (v1_size + 1) * sizeof(long long));
     if (v1 == NULL) {
@@ -21,23 +21,23 @@ void append(long long value) {
 }
 
 // Trie node structure with children and indexes array
-typedef struct SuffixTrieNode {
-    struct SuffixTrieNode *children[MAX_CHAR];  
-    int *indexes;  
-    int index_count;  
-} SuffixTrieNode;
+typedef struct PrefixTrieNode {
+    struct PrefixTrieNode *children[MAX_CHAR];
+    int *indexes;
+    int index_count;
+} PrefixTrieNode;
 
 // Create a new trie node and initialize fields
-SuffixTrieNode* createNode() {
-    SuffixTrieNode *node = (SuffixTrieNode *)malloc(sizeof(SuffixTrieNode));
+PrefixTrieNode* createNode() {
+    PrefixTrieNode *node = (PrefixTrieNode *)malloc(sizeof(PrefixTrieNode));
     node->indexes = NULL;
     node->index_count = 0;
     for (int i = 0; i < MAX_CHAR; i++) node->children[i] = NULL;
     return node;
 }
 
-// Insert a suffix into the trie and track its index
-void insertSuffix(SuffixTrieNode *node, const char *s, int index) {
+// Insert a prefix into the trie and track its index
+void insertPrefix(PrefixTrieNode *node, const char *s, int index) {
     node->indexes = (int *)realloc(node->indexes, (node->index_count + 1) * sizeof(int));
     if (node->indexes == NULL) {
         printf("Memory allocation failed.\n");
@@ -48,12 +48,12 @@ void insertSuffix(SuffixTrieNode *node, const char *s, int index) {
     if (*s != '\0') {
         char cIndex = *s;
         if (node->children[cIndex] == NULL) node->children[cIndex] = createNode();
-        insertSuffix(node->children[cIndex], s + 1, index + 1);
+        insertPrefix(node->children[cIndex], s + 1, index+1);
     }
 }
 
 // Search for a pattern in the trie and return matching indexes
-int* search(SuffixTrieNode *node, const char *s, int *result_count) {
+int* search(PrefixTrieNode *node, const char *s, int *result_count) {
     if (*s == '\0') {
         *result_count = node->index_count;
         return node->indexes;
@@ -62,22 +62,22 @@ int* search(SuffixTrieNode *node, const char *s, int *result_count) {
     return NULL;
 }
 
-typedef struct SuffixTrie {
-    SuffixTrieNode *root;
-} SuffixTrie;
+typedef struct PrefixTrie {
+    PrefixTrieNode *root;
+} PrefixTrie;
 
-// Building a suffix trie from the input text
-SuffixTrie* createSuffixTrie(const char *txt) {
-    SuffixTrie *trie = (SuffixTrie *)malloc(sizeof(SuffixTrie));
+// Building a prefix trie from the input text
+PrefixTrie* createPrefixTrie(const char *txt) {
+    PrefixTrie *trie = (PrefixTrie *)malloc(sizeof(PrefixTrie));
     trie->root = createNode();
-    for (int i = 0; txt[i] != '\0'; i++) insertSuffix(trie->root, txt + i, i);
+    for (int i = 0; txt[i] != '\0'; i++) insertPrefix(trie->root, txt + i, i);
     return trie;
 }
 
-void searchInTrie(SuffixTrie *trie, const char *pat) {
+void searchInTrie(PrefixTrie *trie, const char *pat) {
     int result_count = 0;
     int *result = search(trie->root, pat, &result_count);
-    int temp=0;
+    int temp = 0;
     if (result != NULL) {
         int patLen = strlen(pat);
         for (int i = 0; i < result_count; i++) {
@@ -87,11 +87,12 @@ void searchInTrie(SuffixTrie *trie, const char *pat) {
             int c = (it == 0) ? result[i] - patLen + 1 : result[i] - patLen - v1[it - 1];
 
             count_trie++;
-            if(temp==0) {
-                printf("Found at line: %lld position: %d\n", it + 1, c-1);
+            if (temp == 0) {
+                printf("Found at line: %lld position: %d\n", it + 1, c - 1);
                 temp++;
+            } else {
+                printf("Found at line: %lld position: %d\n", it + 1, c);
             }
-            else printf("Found at line: %lld position: %d\n", it + 1, c);
         }
     }
 }
@@ -132,12 +133,12 @@ int main() {
 
     char *text = readFile("sherlock2.txt");
 
-    SuffixTrie *trie = createSuffixTrie(text);
+    PrefixTrie *trie = createPrefixTrie(text);
 
     char pattern[1024];
     printf("Enter pattern to search: ");
     fgets(pattern, sizeof(pattern), stdin);
-    pattern[strcspn(pattern, "\n")] = '\0';  
+    pattern[strcspn(pattern, "\n")] = '\0';
 
     searchInTrie(trie, pattern);
 
@@ -146,7 +147,7 @@ int main() {
     end = clock();
     double time_taken = ((double)end - start) / CLOCKS_PER_SEC;
     printf("Time taken: %f\n", time_taken);
-    
+
     free(text);
     free(v1);
 
