@@ -10,10 +10,10 @@
 typedef struct TrieNode {
     struct TrieNode* children[MAX_CHAR]; // Array of pointers to child nodes 
     struct TrieNode* failureLink; // Pointer to the node which is the longest proper suffix of the current node
-    int output;  //// Index of the pattern if this node marks the end of a pattern, otherwise -1 
+    int output;  
 } TrieNode;
 
-// Function to create a new Trie Node
+
 TrieNode* createNode() {
     TrieNode* node = (TrieNode*)malloc(sizeof(TrieNode));
     for (int i = 0; i < MAX_CHAR; i++) node->children[i] = NULL; //Initially there are no children
