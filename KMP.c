@@ -6,8 +6,6 @@
 long long *v1 = NULL; 
 int v1_size = 0;       
 int count_kmp = 0;
-
-// Append a value to the dynamic array v1 
 void append(long long value) {
     v1 = (long long *)realloc(v1, (v1_size + 1) * sizeof(long long));
     if (v1 == NULL) {
